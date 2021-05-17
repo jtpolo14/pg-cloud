@@ -21,7 +21,7 @@ def GetQuoteFrom1inch(fromToken, toToken):
     
     return rawResponse
 
-if __name__=='__main__'():
+if __name__=='__main__':
     
     tether = Token('usdt', '0xdac17f958d2ee523a2206206994597c13d831ec7', 1000000)
     wBitcoin = Token('wbtc', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', 100000000)
