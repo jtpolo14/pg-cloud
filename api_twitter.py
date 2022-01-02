@@ -23,8 +23,19 @@ import json
 import sys
 
 import twitter
-from config import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET
+from config import TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
 
+
+class Worker:
+    def __init__(self, WORKER_CONSUMER_KEY, WORKER_CONSUMER_SECRET, WORKER_ACCESS_TOKEN_KEY, WORKER_ACCESS_TOKEN_SECRET):
+         self.api = twitter.Api(
+        WORKER_CONSUMER_KEY, WORKER_CONSUMER_SECRET, WORKER_ACCESS_TOKEN_KEY, WORKER_ACCESS_TOKEN_SECRET
+    )
+    def get_tweets_for_user(self, screen_name):
+        return get_tweets(api=self.api, screen_name=screen_name)
+
+    def get_followers_for_user(self, screen_name):
+        return get_followers(api=self.api, screen_name=screen_name)
 
 def get_tweets(api=None, screen_name=None):
     timeline = api.GetUserTimeline(screen_name=screen_name, count=200)
@@ -47,15 +58,31 @@ def get_tweets(api=None, screen_name=None):
     return timeline
 
 
+def get_followers(api=None, screen_name=None):
+    followers = api.GetFollowers(screen_name=screen_name)
+    print("getting followers...",)
+
+    return followers
+
+
 if __name__ == "__main__":
     api = twitter.Api(
-        CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET
+        TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET
     )
     screen_name = sys.argv[1]
-    print(screen_name)
-    timeline = get_tweets(api=api, screen_name=screen_name)
+    run_code = sys.argv[2]
+    print(screen_name, run_code)
 
-    with open('timeline.json', 'w+') as f:
-        for tweet in timeline:
-            f.write(json.dumps(tweet._json))
-            f.write('\n')
+    if run_code == 1:
+        followers = get_followers(api=api, screen_name=screen_name)
+        with open('followers.json', 'w+') as f:
+            for follower in followers:
+                f.write(json.dumps(follower._json))
+                f.write('\n')
+
+    elif run_code == 2:
+        timeline = get_tweets(api=api, screen_name=screen_name)
+        with open('timeline.json', 'w+') as f:
+            for tweet in timeline:
+                f.write(json.dumps(tweet._json))
+                f.write('\n')
